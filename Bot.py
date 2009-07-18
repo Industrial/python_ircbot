@@ -8,7 +8,6 @@ class Bot:
         self.connection = Connection.Connection(host, port, nick)
         self.buffer_line = ''
         self.running = False
-        pass
 
     def start(self):
         self.connection.connect()
@@ -34,13 +33,11 @@ class Bot:
     def handle_line(self, line):
         self.keep_alive(line)
         print line
-        pass
 
     def keep_alive(self, line):
         ping_expression = re.compile('^PING :.+$')
         if ping_expression.match(line):
             print 'PING FOUND'
-            pass
 
     def send(self, x):
         self.connection.send(x)

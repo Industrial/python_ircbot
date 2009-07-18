@@ -28,3 +28,4 @@ class Connection:
 
     def send(self, x):
         self.socket.send(x)
+
