@@ -1,9 +1,10 @@
-#!/usr/bin/env python
-
 import socket
+import threading
 
-class Connection:
+class Connection(threading.Thread):
     def __init__(self, host, port, nick):
+        threading.Thread.__init__(self)
+
         self.host = host
         self.port = port
         self.nick = nick
@@ -16,6 +17,9 @@ class Connection:
 
     def disconnect(self):
         self.socket.disconnect()
+
+    def start(self):
+        self.connect()
 
     def get_line(self):
         self.stringbuffer += self.socket.recv(1024)

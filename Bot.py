@@ -1,34 +1,38 @@
-#!/usr/bin/env python
-
 import re
-import Connection
+import threading
+import time
+from Connection import Connection
+from Input import Input
+from Output import Output
 
-class Bot:
+class Bot(threading.Thread):
     def __init__(self, host, port, nick):
-        self.connection = Connection.Connection(host, port, nick)
+        threading.Thread.__init__(self)
+
+        self.connection = Connection(host, port, nick)
+        self.input = Input(self.connection)
+        self.output = Output(self.connection)
+
         self.buffer_line = ''
         self.running = False
 
     def start(self):
-        self.connection.connect()
+        self.connection.start()
+        self.input.start()
+        self.output.start()
+
+        print('before')
+        time.sleep(2.5)
+        print('after')
         self.login()
-        self.running = True
-        self.run()
 
     def stop(self):
         self.running = False
         self.connection.disconnect()
 
-    def run(self):
-        while(self.running):
-            line = self.connection.get_line()
-
-            if line:
-                self.handle_line(line)
-
     def login(self):
-        self.send('NICK %s' % self.connection.nick)
-        self.send('USER %s' % self.connection.user)
+        self.input.send('NICK %s' % self.connection.nick)
+        self.input.send('USER %s' % self.connection.user)
 
     def handle_line(self, line):
         self.keep_alive(line)
@@ -38,8 +42,4 @@ class Bot:
         ping_expression = re.compile('^PING :.+$')
         if ping_expression.match(line):
             print 'PING FOUND'
-
-    def send(self, x):
-        self.connection.send(x)
-        print '>>> %s' % x
 
