@@ -1,16 +1,11 @@
 import socket
-import threading
 
-class Connection(threading.Thread):
-    def __init__(self, host, port, nick):
-        threading.Thread.__init__(self)
-
+class Connection:
+    def __init__(self, host, port):
         self.host = host
         self.port = port
-        self.nick = nick
-        self.user = self.nick + ' 0 :' + self.nick + ' ' + self.nick
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.stringbuffer = ""
+        self.socket = socket.socket()
+        self.stringbuffer = ''
 
     def connect(self):
         self.socket.connect((self.host, self.port))
@@ -30,6 +25,6 @@ class Connection(threading.Thread):
             self.stringbuffer = partitioned_line[2]
             return output
 
-    def send(self, x):
-        self.socket.send(x)
+    def send(self, line):
+        self.socket.send('%s\r\n' % line)
 
